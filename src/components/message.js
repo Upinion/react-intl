@@ -47,7 +47,7 @@ export default class FormattedMessage extends Component {
             values,
             tagName,
             tagProps,
-            children
+            children,
         } = this.props;
 
         // Creates a token with a random UID that should not be guessable or
@@ -120,5 +120,5 @@ FormattedMessage.propTypes = {
 FormattedMessage.defaultProps = {
     values : {},
     tagName: 'span',
-    tagProps: null
+    tagProps: null,
 };
