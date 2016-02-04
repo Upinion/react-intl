@@ -46,7 +46,8 @@ export default class FormattedMessage extends Component {
             defaultMessage,
             values,
             tagName,
-            children,
+            tagProps,
+            children
         } = this.props;
 
         // Creates a token with a random UID that should not be guessable or
@@ -95,7 +96,7 @@ export default class FormattedMessage extends Component {
             return children(...nodes);
         }
 
-        return createElement(tagName, null, ...nodes);
+        return createElement(tagName, tagProps, ...nodes);
     }
 }
 
@@ -108,11 +109,16 @@ FormattedMessage.contextTypes = {
 FormattedMessage.propTypes = {
     ...messageDescriptorPropTypes,
     values  : PropTypes.object,
-    tagName : PropTypes.string,
+    tagName: PropTypes.oneOfType([
+         PropTypes.string,
+         PropTypes.func
+     ]),
+    tagProps: PropTypes.object,
     children: PropTypes.func,
 };
 
 FormattedMessage.defaultProps = {
     values : {},
     tagName: 'span',
+    tagProps: null
 };
