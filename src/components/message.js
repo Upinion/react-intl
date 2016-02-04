@@ -110,9 +110,9 @@ FormattedMessage.propTypes = {
     ...messageDescriptorPropTypes,
     values  : PropTypes.object,
     tagName: PropTypes.oneOfType([
-         PropTypes.string,
-         PropTypes.func
-     ]),
+        PropTypes.string,
+        PropTypes.func,
+    ]),
     tagProps: PropTypes.object,
     children: PropTypes.func,
 };

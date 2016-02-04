@@ -4,7 +4,7 @@
  * See the accompanying LICENSE file for terms.
  */
 
-import React, {Component, PropTypes} from 'react';
+import {Component, PropTypes, createElement} from 'react';
 import {intlShape, numberFormatPropTypes} from '../types';
 import {invariantIntlContext, shouldIntlComponentUpdate} from '../utils';
 
@@ -20,7 +20,11 @@ export default class FormattedNumber extends Component {
 
     render() {
         const {formatNumber}    = this.context.intl;
-        const {value, children} = this.props;
+        const {value,
+            children,
+            tagName,
+            tagProps,
+            } = this.props;
 
         let formattedNumber = formatNumber(value, this.props);
 
@@ -28,7 +32,8 @@ export default class FormattedNumber extends Component {
             return children(formattedNumber);
         }
 
-        return <span>{formattedNumber}</span>;
+        return createElement(tagName, tagProps, formattedNumber);
+
     }
 }
 
@@ -42,5 +47,15 @@ FormattedNumber.propTypes = {
     ...numberFormatPropTypes,
     value   : PropTypes.any.isRequired,
     format  : PropTypes.string,
+    tagName: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func,
+    ]),
+    tagProps: PropTypes.object,
     children: PropTypes.func,
+};
+
+FormattedNumber.defaultProps = {
+    tagName: 'span',
+    tagProps: null,
 };

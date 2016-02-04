@@ -4,7 +4,7 @@
  * See the accompanying LICENSE file for terms.
  */
 
-import React, {Component, PropTypes} from 'react';
+import {Component, PropTypes, createElement} from 'react';
 import {intlShape, pluralFormatPropTypes} from '../types';
 import {invariantIntlContext, shouldIntlComponentUpdate} from '../utils';
 
@@ -20,7 +20,12 @@ export default class FormattedPlural extends Component {
 
     render() {
         const {formatPlural}           = this.context.intl;
-        const {value, other, children} = this.props;
+        const {value,
+            other,
+            children,
+            tagName,
+            tagProps,
+        } = this.props;
 
         let pluralCategory  = formatPlural(value, this.props);
         let formattedPlural = this.props[pluralCategory] || other;
@@ -29,7 +34,8 @@ export default class FormattedPlural extends Component {
             return children(formattedPlural);
         }
 
-        return <span>{formattedPlural}</span>;
+        return createElement(tagName, tagProps, formattedPlural);
+
     }
 }
 
@@ -50,9 +56,17 @@ FormattedPlural.propTypes = {
     few  : PropTypes.node,
     many : PropTypes.node,
 
+    tagName: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func,
+    ]),
+    tagProps: PropTypes.object,
+
     children: PropTypes.func,
 };
 
 FormattedPlural.defaultProps = {
     style: 'cardinal',
+    tagName: 'span',
+    tagProps: null,
 };

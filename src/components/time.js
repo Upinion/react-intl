@@ -4,7 +4,7 @@
  * See the accompanying LICENSE file for terms.
  */
 
-import React, {Component, PropTypes} from 'react';
+import {Component, PropTypes, createElement} from 'react';
 import {intlShape, dateTimeFormatPropTypes} from '../types';
 import {invariantIntlContext, shouldIntlComponentUpdate} from '../utils';
 
@@ -20,7 +20,11 @@ export default class FormattedTime extends Component {
 
     render() {
         const {formatTime}      = this.context.intl;
-        const {value, children} = this.props;
+        const {value,
+            children,
+            tagName,
+            tagProps,
+            } = this.props;
 
         let formattedTime = formatTime(value, this.props);
 
@@ -28,7 +32,7 @@ export default class FormattedTime extends Component {
             return children(formattedTime);
         }
 
-        return <span>{formattedTime}</span>;
+        return createElement(tagName, tagProps, formattedTime);
     }
 }
 
@@ -41,6 +45,16 @@ FormattedTime.contextTypes = {
 FormattedTime.propTypes = {
     ...dateTimeFormatPropTypes,
     value   : PropTypes.any.isRequired,
+    tagName: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func,
+    ]),
+    tagProps: PropTypes.object,
     format  : PropTypes.string,
     children: PropTypes.func,
+};
+
+FormattedTime.defaultProps = {
+    tagName: 'span',
+    tagProps: null,
 };
