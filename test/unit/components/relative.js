@@ -2,7 +2,7 @@ import expect, {spyOn} from 'expect';
 import expectJSX from 'expect-jsx';
 import React from 'react';
 import {createRenderer} from 'react-addons-test-utils';
-import IntlProvider from '../../../src/components/intl';
+import IntlProvider from '../../../src/components/provider';
 import FormattedRelative from '../../../src/components/relative';
 
 expect.extend(expectJSX);
@@ -43,9 +43,15 @@ describe('<FormattedRelative>', () => {
     it('requires a finite `value` prop', () => {
         const {intl} = intlProvider.getChildContext();
 
-        expect(() => renderer.render(<FormattedRelative />, {intl})).toThrow(RangeError);
+        renderer.render(<FormattedRelative value={0} />, {intl});
         expect(isFinite(0)).toBe(true);
-        expect(() => renderer.render(<FormattedRelative value={0} />, {intl})).toNotThrow();
+        expect(consoleError.calls.length).toBe(0);
+
+        renderer.render(<FormattedRelative />, {intl});
+        expect(consoleError.calls.length).toBe(1);
+        expect(consoleError.calls[0].arguments[0]).toContain(
+            '[React Intl] Error formatting relative time.\nRangeError'
+        );
     });
 
     it('renders a formatted relative time in a <span>', () => {
@@ -107,11 +113,16 @@ describe('<FormattedRelative>', () => {
         );
     });
 
-    it('throws on invalid IntlRelativeFormat options', () => {
+    it('fallsback and warns on invalid IntlRelativeFormat options', () => {
         const {intl} = intlProvider.getChildContext();
         const el = <FormattedRelative value={0} units="invalid" />;
 
-        expect(() => renderer.render(el, {intl})).toThrow();
+        renderer.render(el, {intl});
+        expect(renderer.getRenderOutput()).toEqualJSX(
+            <span>{String(new Date(0))}</span>
+        );
+
+        expect(consoleError.calls.length).toBeGreaterThan(0);
     });
 
     it('accepts `format` prop', () => {
@@ -176,11 +187,11 @@ describe('<FormattedRelative>', () => {
         const date = new Date();
         const now = intl.now();
 
-        // Force scheduler by rendering twice with different props because
         renderer.render(<FormattedRelative value={date} updateInterval={1} />, {intl});
         const renderedOne = renderer.getRenderOutput();
 
-        // Shallow Renderer doesn't call `componentDidMount()`.
+        // Shallow Renderer doesn't call `componentDidMount()`. This forces the
+        // scheduler to schedule an update based on the `updateInterval`.
         renderer.getMountedInstance().componentDidMount();
 
         // Update `now()` to act like the <IntlProvider> is mounted.
@@ -201,16 +212,19 @@ describe('<FormattedRelative>', () => {
 
     it('updates at maximum of `updateInterval` with a string `value`', (done) => {
         const {intl} = intlProvider.getChildContext();
-        const date = new Date().toString();
 
         // `toString()` rounds the date to the nearest second, this makes sure
-        // `date` and `now` are equal.
-        spyOn(intl, 'now').andCall(Date.now);
+        // `date` and `now` are exactly 1000ms apart so the scheduler will wait
+        // 1000ms before the next interesting moment.
+        const now = 2000;
+        const date = new Date(now - 1000).toString();
 
-        // Force scheduler by rendering twice with different props because
-        renderer.render(<FormattedRelative value={date} updateInterval={10} />, {intl});
+        spyOn(intl, 'now').andReturn(now);
 
-        // Shallow Renderer doesn't call `componentDidMount()`.
+        renderer.render(<FormattedRelative value={date} updateInterval={1} />, {intl});
+
+        // Shallow Renderer doesn't call `componentDidMount()`. This forces the
+        // scheduler to schedule an update based on the `updateInterval`.
         renderer.getMountedInstance().componentDidMount();
 
         setTimeout(() => {
@@ -227,11 +241,11 @@ describe('<FormattedRelative>', () => {
         const date = new Date();
         const now = intl.now();
 
-        // Force scheduler by rendering twice with different props because
         renderer.render(<FormattedRelative value={date} updateInterval={0} />, {intl});
         const renderedOne = renderer.getRenderOutput();
 
-        // Shallow Renderer doesn't call `componentDidMount()`.
+        // Shallow Renderer doesn't call `componentDidMount()`. This forces the
+        // scheduler to schedule an update based on the `updateInterval`.
         renderer.getMountedInstance().componentDidMount();
 
         // Update `now()` to act like the <IntlProvider> is mounted.

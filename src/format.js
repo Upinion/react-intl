@@ -5,6 +5,7 @@
  */
 
 import invariant from 'invariant';
+import IntlRelativeFormat from 'intl-relativeformat';
 
 import {
     dateTimeFormatPropTypes,
@@ -22,6 +23,25 @@ const DATE_TIME_FORMAT_OPTIONS = Object.keys(dateTimeFormatPropTypes);
 const NUMBER_FORMAT_OPTIONS    = Object.keys(numberFormatPropTypes);
 const RELATIVE_FORMAT_OPTIONS  = Object.keys(relativeFormatPropTypes);
 const PLURAL_FORMAT_OPTIONS    = Object.keys(pluralFormatPropTypes);
+
+const RELATIVE_FORMAT_THRESHOLDS = {
+    second: 60, // seconds to minute
+    minute: 60, // minutes to hour
+    hour  : 24, // hours to day
+    day   : 30, // days to month
+    month : 12, // months to year
+};
+
+function updateRelativeFormatThresholds(newThresholds) {
+    const {thresholds} = IntlRelativeFormat;
+    ({
+        second: thresholds.second,
+        minute: thresholds.minute,
+        hour  : thresholds.hour,
+        day   : thresholds.day,
+        month : thresholds.month,
+    } = newThresholds);
+}
 
 function getNamedFormat(formats, type, name) {
     let format = formats && formats[type] && formats[type][name];
@@ -44,7 +64,17 @@ export function formatDate(config, state, value, options = {}) {
     let defaults        = format && getNamedFormat(formats, 'date', format);
     let filteredOptions = filterProps(options, DATE_TIME_FORMAT_OPTIONS, defaults);
 
-    return state.getDateTimeFormat(locale, filteredOptions).format(date);
+    try {
+        return state.getDateTimeFormat(locale, filteredOptions).format(date);
+    } catch (e) {
+        if (process.env.NODE_ENV !== 'production') {
+            console.error(
+                `[React Intl] Error formatting date.\n${e}`
+            );
+        }
+    }
+
+    return String(date);
 }
 
 export function formatTime(config, state, value, options = {}) {
@@ -64,7 +94,17 @@ export function formatTime(config, state, value, options = {}) {
         };
     }
 
-    return state.getDateTimeFormat(locale, filteredOptions).format(date);
+    try {
+        return state.getDateTimeFormat(locale, filteredOptions).format(date);
+    } catch (e) {
+        if (process.env.NODE_ENV !== 'production') {
+            console.error(
+                `[React Intl] Error formatting time.\n${e}`
+            );
+        }
+    }
+
+    return String(date);
 }
 
 export function formatRelative(config, state, value, options = {}) {
@@ -76,9 +116,26 @@ export function formatRelative(config, state, value, options = {}) {
     let defaults        = format && getNamedFormat(formats, 'relative', format);
     let filteredOptions = filterProps(options, RELATIVE_FORMAT_OPTIONS, defaults);
 
-    return state.getRelativeFormat(locale, filteredOptions).format(date, {
-        now: isFinite(now) ? now : state.now(),
-    });
+    // Capture the current threshold values, then temporarily override them with
+    // specific values just for this render.
+    const oldThresholds = {...IntlRelativeFormat.thresholds};
+    updateRelativeFormatThresholds(RELATIVE_FORMAT_THRESHOLDS);
+
+    try {
+        return state.getRelativeFormat(locale, filteredOptions).format(date, {
+            now: isFinite(now) ? now : state.now(),
+        });
+    } catch (e) {
+        if (process.env.NODE_ENV !== 'production') {
+            console.error(
+                `[React Intl] Error formatting relative time.\n${e}`
+            );
+        }
+    } finally {
+        updateRelativeFormatThresholds(oldThresholds);
+    }
+
+    return String(date);
 }
 
 export function formatNumber(config, state, value, options = {}) {
@@ -88,7 +145,17 @@ export function formatNumber(config, state, value, options = {}) {
     let defaults        = format && getNamedFormat(formats, 'number', format);
     let filteredOptions = filterProps(options, NUMBER_FORMAT_OPTIONS, defaults);
 
-    return state.getNumberFormat(locale, filteredOptions).format(value);
+    try {
+        return state.getNumberFormat(locale, filteredOptions).format(value);
+    } catch (e) {
+        if (process.env.NODE_ENV !== 'production') {
+            console.error(
+                `[React Intl] Error formatting number.\n${e}`
+            );
+        }
+    }
+
+    return String(value);
 }
 
 export function formatPlural(config, state, value, options = {}) {
@@ -96,7 +163,17 @@ export function formatPlural(config, state, value, options = {}) {
 
     let filteredOptions = filterProps(options, PLURAL_FORMAT_OPTIONS);
 
-    return state.getPluralFormat(locale, filteredOptions).format(value);
+    try {
+        return state.getPluralFormat(locale, filteredOptions).format(value);
+    } catch (e) {
+        if (process.env.NODE_ENV !== 'production') {
+            console.error(
+                `[React Intl] Error formatting plural.\n${e}`
+            );
+        }
+    }
+
+    return 'other';
 }
 
 export function formatMessage(config, state, messageDescriptor = {}, values = {}) {

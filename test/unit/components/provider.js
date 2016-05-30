@@ -3,7 +3,7 @@ import expectJSX from 'expect-jsx';
 import React from 'react';
 import {createRenderer} from 'react-addons-test-utils';
 import {intlConfigPropTypes, intlFormatPropTypes} from '../../../src/types';
-import IntlProvider from '../../../src/components/intl';
+import IntlProvider from '../../../src/components/provider';
 
 expect.extend(expectJSX);
 
@@ -111,7 +111,7 @@ describe('<IntlProvider>', () => {
         renderer.render(el);
         expect(consoleError.calls.length).toBe(1);
         expect(consoleError.calls[0].arguments[0]).toContain(
-            `[React Intl] Missing locale data for locale: "undefined". Using default locale: "en" as fallback.`
+            '[React Intl] Missing locale data for locale: "undefined". Using default locale: "en" as fallback.'
         );
     });
 
@@ -181,6 +181,27 @@ describe('<IntlProvider>', () => {
         INTL_CONFIG_PROP_NAMES.forEach((propName) => {
             expect(intl[propName]).toBe(props[propName]);
         });
+    });
+
+    it('provides `context.intl` with values from `defaultProps` for missing or undefined props', () => {
+        const props = {
+            locale: 'en-US',
+            defaultLocale: undefined,
+        };
+
+        const el = (
+            <IntlProvider {...props}>
+                <Child />
+            </IntlProvider>
+        );
+
+        renderer.render(el);
+        const {intl} = renderer.getMountedInstance().getChildContext();
+
+        expect(intl.defaultLocale).toNotBe(undefined);
+        expect(intl.defaultLocale).toBe('en');
+        expect(intl.messages).toNotBe(undefined);
+        expect(intl.messages).toBeAn('object');
     });
 
     it('provides `context.intl` with format methods bound to intl config props', () => {
