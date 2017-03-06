@@ -209,11 +209,11 @@ export function formatMessage(config, state, messageDescriptor = {}, values = {}
             formattedMessage = formatter.format(values);
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') {
-                console.error(
-                    `[React Intl] Error formatting message: "${id}" for locale: "${locale}"` +
-                    (defaultMessage ? ', using default message as fallback.' : '') +
-                    `\n${e}`
-                );
+                // console.error(
+                //     `[React Intl] Error formatting message: "${id}" for locale: "${locale}"` +
+                //     (defaultMessage ? ', using default message as fallback.' : '') +
+                //     `\n${e}`
+                // );
             }
         }
     } else {
@@ -224,10 +224,10 @@ export function formatMessage(config, state, messageDescriptor = {}, values = {}
             if (!defaultMessage ||
                 (locale && locale.toLowerCase() !== defaultLocale.toLowerCase())) {
 
-                console.error(
-                    `[React Intl] Missing message: "${id}" for locale: "${locale}"` +
-                    (defaultMessage ? ', using default message as fallback.' : '')
-                );
+                // console.error(
+                //     `[React Intl] Missing message: "${id}" for locale: "${locale}"` +
+                //     (defaultMessage ? ', using default message as fallback.' : '')
+                // );
             }
         }
     }
@@ -241,20 +241,20 @@ export function formatMessage(config, state, messageDescriptor = {}, values = {}
             formattedMessage = formatter.format(values);
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') {
-                console.error(
-                    `[React Intl] Error formatting the default message for: "${id}"` +
-                    `\n${e}`
-                );
+                // console.error(
+                //     `[React Intl] Error formatting the default message for: "${id}"` +
+                //     `\n${e}`
+                // );
             }
         }
     }
 
     if (!formattedMessage) {
         if (process.env.NODE_ENV !== 'production') {
-            console.error(
-                `[React Intl] Cannot format message: "${id}", ` +
-                `using message ${message || defaultMessage ? 'source' : 'id'} as fallback.`
-            );
+            // console.error(
+            //     `[React Intl] Cannot format message: "${id}", ` +
+            //     `using message ${message || defaultMessage ? 'source' : 'id'} as fallback.`
+            // );
         }
     }
 
