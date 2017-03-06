@@ -50,6 +50,19 @@ describe('<FormattedMessage>', () => {
         );
     });
 
+    it('should not cause a unique "key" prop warning', () => {
+        const {intl} = intlProvider.getChildContext();
+        const descriptor = {
+            id: 'hello',
+            defaultMessage: 'Hello, {name}!',
+        };
+
+        const el = <FormattedMessage {...descriptor} values={{name: <b>Eric</b>}} />;
+
+        renderer.render(el, {intl});
+        expect(consoleError.calls.length).toBe(0);
+    });
+
     it('should not re-render when props and context are the same', () => {
         intlProvider = new IntlProvider({locale: 'en', defaultLocale: 'en'}, {});
         renderer.render(
@@ -193,6 +206,33 @@ describe('<FormattedMessage>', () => {
         expect(rendered.props.children).toBeAn('array');
         expect(rendered).toEqualJSX(
             <span>Hello, <b>Eric</b>!</span>
+        );
+    });
+
+    it('supports rich-text message formatting in function-as-child pattern', () => {
+        const {intl} = intlProvider.getChildContext();
+
+        const el = (
+            <FormattedMessage
+                id="hello"
+                defaultMessage="Hello, {name}!"
+                values={{
+                    name: <b>Prem</b>,
+                }}
+            >
+                {(...formattedMessage) => (
+                    <strong>{formattedMessage}</strong>
+                )}
+
+            </FormattedMessage>
+        );
+
+        renderer.render(el, {intl});
+        const rendered = renderer.getRenderOutput();
+
+        expect(rendered.props.children).toBeAn('array');
+        expect(rendered).toEqualJSX(
+            <strong>Hello, <b>Prem</b>!</strong>
         );
     });
 });

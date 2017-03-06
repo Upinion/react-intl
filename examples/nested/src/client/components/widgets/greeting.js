@@ -20,7 +20,9 @@ const Greeting = ({name, unreadCount, lastLoginTime}) => (
                 name: <b>{name}</b>,
                 unreadCount: unreadCount,
                 formattedUnreadCount: (
-                    <b><FormattedNumber value={unreadCount} /></b>
+                    <b>
+                        <FormattedNumber value={unreadCount} />
+                    </b>
                 ),
                 formattedLastLoginTime: (
                     <FormattedRelative

@@ -36,11 +36,12 @@ function writeUMDFile(filename, module) {
     const lang = p.basename(filename, '.js');
 
     return rollup({
-        entry: filename,
+        entry: {
+            path: filename,
+            contents: module,
+        },
         plugins: [
-            memory({
-                contents: module,
-            }),
+            memory(),
             uglify(),
         ],
     })
@@ -81,4 +82,4 @@ cldrDataByLang.forEach((cldrData, lang) => {
 });
 
 process.on('unhandledRejection', (reason) => {throw reason;});
-console.log('Writing locale data files...');
+console.log('> Writing locale data files...');

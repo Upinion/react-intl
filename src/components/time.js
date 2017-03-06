@@ -4,11 +4,24 @@
  * See the accompanying LICENSE file for terms.
  */
 
-import {Component, PropTypes, createElement} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {intlShape, dateTimeFormatPropTypes} from '../types';
 import {invariantIntlContext, shouldIntlComponentUpdate} from '../utils';
 
 export default class FormattedTime extends Component {
+    static displayName = 'FormattedTime';
+
+    static contextTypes = {
+        intl: intlShape,
+    };
+
+    static propTypes = {
+        ...dateTimeFormatPropTypes,
+        value   : PropTypes.any.isRequired,
+        format  : PropTypes.string,
+        children: PropTypes.func,
+    };
+
     constructor(props, context) {
         super(props, context);
         invariantIntlContext(context);
@@ -19,12 +32,8 @@ export default class FormattedTime extends Component {
     }
 
     render() {
-        const {formatTime}      = this.context.intl;
-        const {value,
-            children,
-            tagName,
-            tagProps,
-            } = this.props;
+        const {formatTime, textComponent: Text} = this.context.intl;
+        const {value, children} = this.props;
 
         let formattedTime = formatTime(value, this.props);
 
@@ -32,29 +41,6 @@ export default class FormattedTime extends Component {
             return children(formattedTime);
         }
 
-        return createElement(tagName, tagProps, formattedTime);
+        return <Text>{formattedTime}</Text>;
     }
 }
-
-FormattedTime.displayName = 'FormattedTime';
-
-FormattedTime.contextTypes = {
-    intl: intlShape,
-};
-
-FormattedTime.propTypes = {
-    ...dateTimeFormatPropTypes,
-    value   : PropTypes.any.isRequired,
-    tagName: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func,
-    ]),
-    tagProps: PropTypes.object,
-    format  : PropTypes.string,
-    children: PropTypes.func,
-};
-
-FormattedTime.defaultProps = {
-    tagName: 'span',
-    tagProps: null,
-};

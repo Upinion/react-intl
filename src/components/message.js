@@ -13,6 +13,23 @@ import {
 } from '../utils';
 
 export default class FormattedMessage extends Component {
+    static displayName = 'FormattedMessage';
+
+    static contextTypes = {
+        intl: intlShape,
+    };
+
+    static propTypes = {
+        ...messageDescriptorPropTypes,
+        values  : PropTypes.object,
+        tagName : PropTypes.string,
+        children: PropTypes.func,
+    };
+
+    static defaultProps = {
+        values : {},
+    };
+
     constructor(props, context) {
         super(props, context);
         invariantIntlContext(context);
@@ -38,15 +55,14 @@ export default class FormattedMessage extends Component {
     }
 
     render() {
-        const {formatMessage} = this.context.intl;
+        const {formatMessage, textComponent: Text} = this.context.intl;
 
         const {
             id,
             description,
             defaultMessage,
             values,
-            tagName,
-            tagProps,
+            tagName: Component = Text,
             children,
         } = this.props;
 
@@ -113,29 +129,8 @@ export default class FormattedMessage extends Component {
             return children(...nodes);
         }
 
-        return createElement(tagName, tagProps, ...nodes);
+        // Needs to use `createElement()` instead of JSX, otherwise React will
+        // warn about a missing `key` prop with rich-text message formatting.
+        return createElement(Component, null, ...nodes);
     }
 }
-
-FormattedMessage.displayName = 'FormattedMessage';
-
-FormattedMessage.contextTypes = {
-    intl: intlShape,
-};
-
-FormattedMessage.propTypes = {
-    ...messageDescriptorPropTypes,
-    values  : PropTypes.object,
-    tagName: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func,
-    ]),
-    tagProps: PropTypes.object,
-    children: PropTypes.func,
-};
-
-FormattedMessage.defaultProps = {
-    values : {},
-    tagName: 'span',
-    tagProps: null,
-};

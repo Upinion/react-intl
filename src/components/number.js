@@ -4,11 +4,24 @@
  * See the accompanying LICENSE file for terms.
  */
 
-import {Component, PropTypes, createElement} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {intlShape, numberFormatPropTypes} from '../types';
 import {invariantIntlContext, shouldIntlComponentUpdate} from '../utils';
 
 export default class FormattedNumber extends Component {
+    static displayName = 'FormattedNumber';
+
+    static contextTypes = {
+        intl: intlShape,
+    };
+
+    static propTypes = {
+        ...numberFormatPropTypes,
+        value   : PropTypes.any.isRequired,
+        format  : PropTypes.string,
+        children: PropTypes.func,
+    };
+
     constructor(props, context) {
         super(props, context);
         invariantIntlContext(context);
@@ -19,12 +32,8 @@ export default class FormattedNumber extends Component {
     }
 
     render() {
-        const {formatNumber}    = this.context.intl;
-        const {value,
-            children,
-            tagName,
-            tagProps,
-            } = this.props;
+        const {formatNumber, textComponent: Text} = this.context.intl;
+        const {value, children} = this.props;
 
         let formattedNumber = formatNumber(value, this.props);
 
@@ -32,30 +41,6 @@ export default class FormattedNumber extends Component {
             return children(formattedNumber);
         }
 
-        return createElement(tagName, tagProps, formattedNumber);
-
+        return <Text>{formattedNumber}</Text>;
     }
 }
-
-FormattedNumber.displayName = 'FormattedNumber';
-
-FormattedNumber.contextTypes = {
-    intl: intlShape,
-};
-
-FormattedNumber.propTypes = {
-    ...numberFormatPropTypes,
-    value   : PropTypes.any.isRequired,
-    format  : PropTypes.string,
-    tagName: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func,
-    ]),
-    tagProps: PropTypes.object,
-    children: PropTypes.func,
-};
-
-FormattedNumber.defaultProps = {
-    tagName: 'span',
-    tagProps: null,
-};

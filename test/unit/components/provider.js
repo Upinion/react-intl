@@ -16,12 +16,14 @@ const skipWhen = (shouldSkip, callback) => {
 };
 
 describe('<IntlProvider>', () => {
-    let immutableIntl;
+    let immutableIntl = false;
     try {
         global.Intl = global.Intl;
     } catch (e) {
         immutableIntl = true;
     }
+
+    const now = Date.now();
 
     const INTL = global.Intl;
 
@@ -44,7 +46,7 @@ describe('<IntlProvider>', () => {
 
     beforeEach(() => {
         consoleError       = spyOn(console, 'error');
-        dateNow            = spyOn(Date, 'now').andReturn(0);
+        dateNow            = spyOn(Date, 'now').andReturn(now);
         IntlProviderRender = spyOn(IntlProvider.prototype, 'render').andCallThrough();
 
         renderer = createRenderer();
@@ -75,7 +77,7 @@ describe('<IntlProvider>', () => {
     // If global.Intl is immutable, then skip this test.
     skipWhen(immutableIntl, (it) => {
         it('throws when `Intl` is missing from runtime', () => {
-            delete global.Intl;
+            global.Intl = undefined;
             expect(() => renderer.render(<IntlProvider />)).toThrow(
                 '[React Intl] The `Intl` APIs must be available in the runtime, and do not appear to be built-in. An `Intl` polyfill should be loaded.'
             );
@@ -83,9 +85,7 @@ describe('<IntlProvider>', () => {
     });
 
     it('throws when no `children`', () => {
-        expect(() => renderer.render(<IntlProvider />)).toThrow(
-            'onlyChild must be passed a children with exactly one child.'
-        );
+        expect(() => renderer.render(<IntlProvider />)).toThrow();
     });
 
     it('throws when more than one `children`', () => {
@@ -96,9 +96,7 @@ describe('<IntlProvider>', () => {
             </IntlProvider>
         );
 
-        expect(() => renderer.render(el)).toThrow(
-            'onlyChild must be passed a children with exactly one child.'
-        );
+        expect(() => renderer.render(el)).toThrow();
     });
 
     it('warns when no `locale` prop is provided', () => {
@@ -161,9 +159,10 @@ describe('<IntlProvider>', () => {
 
     it('provides `context.intl` with values from intl config props', () => {
         const props = {
-            locale  : 'fr-FR',
-            formats : {},
-            messages: {},
+            locale       : 'fr-FR',
+            formats      : {},
+            messages     : {},
+            textComponent: 'span',
 
             defaultLocale : 'en-US',
             defaultFormats: {},
@@ -247,6 +246,7 @@ describe('<IntlProvider>', () => {
             messages: {
                 hello: 'Hello, World!',
             },
+            textComponent: 'span',
 
             defaultLocale : 'fr',
             defaultFormats: {
@@ -309,6 +309,7 @@ describe('<IntlProvider>', () => {
                 messages={{}}
                 defaultLocale="en"
                 defaultFormats={{}}
+                textComponent="span"
             >
                 <Child />
             </IntlProvider>
@@ -394,7 +395,6 @@ describe('<IntlProvider>', () => {
         const {intl} = renderer.getMountedInstance().getChildContext();
 
         expect(intl.now()).toBe(initialNow);
-        expect(dateNow).toNotHaveBeenCalled();
     });
 
     it('defaults `initialNow` to `Date.now()`', () => {
@@ -406,7 +406,7 @@ describe('<IntlProvider>', () => {
 
         const {intl} = renderer.getMountedInstance().getChildContext();
 
-        expect(intl.now()).toBe(Date.now());
+        expect(intl.now()).toBe(now);
     });
 
     it('inherits `initialNow` from an <IntlProvider> ancestor', () => {
@@ -426,7 +426,6 @@ describe('<IntlProvider>', () => {
         const {intl} = renderer.getMountedInstance().getChildContext();
 
         expect(intl.now()).toBe(initialNow);
-        expect(dateNow).toNotHaveBeenCalled();
     });
 
     it('updates `now()` to return the current date when mounted', (done) => {
@@ -454,7 +453,7 @@ describe('<IntlProvider>', () => {
 
             expect(nowTwo).toNotEqual(nowOne);
             expect(nowOne).toBe(initialNow);
-            expect(nowTwo).toBe(Date.now());
+            expect(nowTwo).toBe(now);
 
             renderer.unmount();
             done();

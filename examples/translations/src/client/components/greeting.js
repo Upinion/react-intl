@@ -20,7 +20,9 @@ class Greeting extends Component {
                         name: <b>{user.name}</b>,
                         unreadCount: user.unreadCount,
                         formattedUnreadCount: (
-                            <b><FormattedNumber value={user.unreadCount} /></b>
+                            <b>
+                                <FormattedNumber value={user.unreadCount} />
+                            </b>
                         ),
                         formattedLastLoginTime: (
                             <FormattedRelative value={user.lastLoginTime} />
