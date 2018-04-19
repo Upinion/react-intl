@@ -1,7 +1,7 @@
 import expect, {spyOn} from 'expect';
 import expectJSX from 'expect-jsx';
 import React from 'react';
-import {createRenderer} from 'react-addons-test-utils';
+import {createRenderer} from '../../react-compat';
 import IntlProvider from '../../../src/components/provider';
 import FormattedMessage from '../../../src/components/message';
 
@@ -54,6 +54,37 @@ describe('<FormattedMessage>', () => {
         const {intl} = intlProvider.getChildContext();
         const descriptor = {
             id: 'hello',
+            defaultMessage: 'Hello, {name}!',
+        };
+
+        const el = <FormattedMessage {...descriptor} values={{name: <b>Eric</b>}} />;
+
+        renderer.render(el, {intl});
+        expect(consoleError.calls.length).toBe(0);
+    });
+
+    it('should not cause a prop warning when description is a string', () => {
+        const {intl} = intlProvider.getChildContext();
+        const descriptor = {
+            id: 'hello',
+            description: 'Greeting',
+            defaultMessage: 'Hello, {name}!',
+        };
+
+        const el = <FormattedMessage {...descriptor} values={{name: <b>Eric</b>}} />;
+
+        renderer.render(el, {intl});
+        expect(consoleError.calls.length).toBe(0);
+    });
+
+    it('should not cause a prop warning when description is an object', () => {
+        const {intl} = intlProvider.getChildContext();
+        const descriptor = {
+            id: 'hello',
+            description: {
+                text: 'Greeting',
+                ticket: 'GTP-1234',
+            },
             defaultMessage: 'Hello, {name}!',
         };
 
