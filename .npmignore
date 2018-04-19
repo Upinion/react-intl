@@ -3,5 +3,6 @@ examples/
 test/
 scripts/
 src/
+test/
 rollup.config.*
 .*
