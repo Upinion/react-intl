@@ -16,6 +16,7 @@ if (typeof React === 'undefined') {
 
 
 var React__default = 'default' in React ? React['default'] : React;
+var PropTypes = require('prop-types');
 
 // GENERATED FILE
 var defaultLocaleData = { "locale": "en", "pluralRuleFunction": function pluralRuleFunction(n, ord) {
@@ -2553,14 +2554,14 @@ var toConsumableArray = function (arr) {
  * See the accompanying LICENSE file for terms.
  */
 
-var bool = React.PropTypes.bool;
-var number = React.PropTypes.number;
-var string = React.PropTypes.string;
-var func = React.PropTypes.func;
-var object = React.PropTypes.object;
-var oneOf = React.PropTypes.oneOf;
-var shape = React.PropTypes.shape;
-var any = React.PropTypes.any;
+var bool = PropTypes.bool;
+var number = PropTypes.number;
+var string = PropTypes.string;
+var func = PropTypes.func;
+var object = PropTypes.object;
+var oneOf = PropTypes.oneOf;
+var shape = PropTypes.shape;
+var any = PropTypes.any;
 
 var localeMatcher = oneOf(['best fit', 'lookup']);
 var narrowShortLong = oneOf(['narrow', 'short', 'long']);
@@ -3476,8 +3477,8 @@ IntlProvider.childContextTypes = {
     intl: intlShape.isRequired
 };
 IntlProvider.propTypes = _extends({}, intlConfigPropTypes, {
-    children: React.PropTypes.element.isRequired,
-    initialNow: React.PropTypes.any
+    children: PropTypes.element.isRequired,
+    initialNow: PropTypes.any
 });
 
 /*
@@ -3539,9 +3540,9 @@ FormattedDate.contextTypes = {
     intl: intlShape
 };
 FormattedDate.propTypes = _extends({}, dateTimeFormatPropTypes, {
-    value: React.PropTypes.any.isRequired,
-    format: React.PropTypes.string,
-    children: React.PropTypes.func
+    value: PropTypes.any.isRequired,
+    format: PropTypes.string,
+    children: PropTypes.func
 });
 
 /*
@@ -3603,9 +3604,9 @@ FormattedTime.contextTypes = {
     intl: intlShape
 };
 FormattedTime.propTypes = _extends({}, dateTimeFormatPropTypes, {
-    value: React.PropTypes.any.isRequired,
-    format: React.PropTypes.string,
-    children: React.PropTypes.func
+    value: PropTypes.any.isRequired,
+    format: PropTypes.string,
+    children: PropTypes.func
 });
 
 /*
@@ -3792,11 +3793,11 @@ FormattedRelative.defaultProps = {
     updateInterval: 1000 * 10
 };
 FormattedRelative.propTypes = _extends({}, relativeFormatPropTypes, {
-    value: React.PropTypes.any.isRequired,
-    format: React.PropTypes.string,
-    updateInterval: React.PropTypes.number,
-    initialNow: React.PropTypes.any,
-    children: React.PropTypes.func
+    value: PropTypes.any.isRequired,
+    format: PropTypes.string,
+    updateInterval: PropTypes.number,
+    initialNow: PropTypes.any,
+    children: PropTypes.func
 });
 
 /*
@@ -3858,9 +3859,9 @@ FormattedNumber.contextTypes = {
     intl: intlShape
 };
 FormattedNumber.propTypes = _extends({}, numberFormatPropTypes, {
-    value: React.PropTypes.any.isRequired,
-    format: React.PropTypes.string,
-    children: React.PropTypes.func
+    value: PropTypes.any.isRequired,
+    format: PropTypes.string,
+    children: PropTypes.func
 });
 
 /*
@@ -3927,16 +3928,16 @@ FormattedPlural.defaultProps = {
     style: 'cardinal'
 };
 FormattedPlural.propTypes = _extends({}, pluralFormatPropTypes, {
-    value: React.PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
 
-    other: React.PropTypes.node.isRequired,
-    zero: React.PropTypes.node,
-    one: React.PropTypes.node,
-    two: React.PropTypes.node,
-    few: React.PropTypes.node,
-    many: React.PropTypes.node,
+    other: PropTypes.node.isRequired,
+    zero: PropTypes.node,
+    one: PropTypes.node,
+    two: PropTypes.node,
+    few: PropTypes.node,
+    many: PropTypes.node,
 
-    children: React.PropTypes.func
+    children: PropTypes.func
 });
 
 /*
@@ -4079,9 +4080,9 @@ FormattedMessage.defaultProps = {
     values: {}
 };
 FormattedMessage.propTypes = _extends({}, messageDescriptorPropTypes, {
-    values: React.PropTypes.object,
-    tagName: React.PropTypes.string,
-    children: React.PropTypes.func
+    values: PropTypes.object,
+    tagName: PropTypes.string,
+    children: PropTypes.func
 });
 
 /*
@@ -4172,9 +4173,9 @@ FormattedHTMLMessage.defaultProps = {
     values: {}
 };
 FormattedHTMLMessage.propTypes = _extends({}, messageDescriptorPropTypes, {
-    values: React.PropTypes.object,
-    tagName: React.PropTypes.string,
-    children: React.PropTypes.func
+    values: PropTypes.object,
+    tagName: PropTypes.string,
+    children: PropTypes.func
 });
 
 /*
