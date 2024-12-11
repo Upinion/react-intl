@@ -81,6 +81,9 @@ export const numberFormatPropTypes = {
   currencyDisplay: oneOf(['symbol', 'code', 'name']),
   useGrouping: bool,
 
+  notation: oneOf(['standard', 'scientific', 'engineering', 'compact']),
+  compactDisplay: oneOf(['short', 'long']),
+  
   minimumIntegerDigits: number,
   minimumFractionDigits: number,
   maximumFractionDigits: number,
